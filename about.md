@@ -1,7 +1,7 @@
 ---
 layout: page
 title: "About"
-description: "学苟知本，六经皆我注脚 "
+description: "Life is short，you need Spark"
 header-img: "img/11.jpg"
 ---
 
@@ -10,9 +10,9 @@ header-img: "img/11.jpg"
     <p><img src="http://img.blog.csdn.net/20160422150216341" width="120" align="center"></p>
 </center>
 
-我是罗学焕，Spark学习者，学习时间：2014年02月10日至2015年02月23日，感谢这段经历，让我成为了现在的我。
+我是罗学焕。
 
-现在研习 **Spark Streaming** 。
+正在学习 **Spark Streaming** 。
 
 ### 坚信
 
@@ -25,13 +25,13 @@ header-img: "img/11.jpg"
 
 ### 关注：
 
-
-- [CSDN](http://www.csdn.com/)
 - Java
+- Scala
 - Spark
-- [阳志平](http://www.yangzhiping.com/)
-
-
+- Hadoop
+- Redis
+- Kafka
+- JVM
 
 
 ### 最爱的书籍：
