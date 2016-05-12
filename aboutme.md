@@ -24,6 +24,7 @@ header-img: "img/11.jpg"
 
 - 邮箱：lxuehuan@gmail
 
+
 	工作经历
 
 南京华盾电力信息安全测评有限公司
@@ -74,7 +75,7 @@ teaM系统让团队协作更轻松。
 
 	作品展示
 
-- teaM：http://t.cn/RqCYOAZ
+- [teaM:http://t.cn/RqCYOAZ](http://t.cn/RqCYOAZ)
  
 - github地址：http://github.com/luoxuehuan
  
