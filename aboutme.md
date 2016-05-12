@@ -75,12 +75,13 @@ teaM系统让团队协作更轻松。
 
 	作品展示
 
-- [teaM:http://t.cn/RqCYOAZ](http://t.cn/RqCYOAZ)
+- [teaM](http://t.cn/RqCYOAZ)
  
-- github地址：http://github.com/luoxuehuan
+- [github地址](http://github.com/luoxuehuan)
  
-- 个人博客:http://www.luoxuehuan.com
+- [个人博客](http://www.luoxuehuan.com)
 
+	个人描述
 
 - 热爱专研，对技术有强烈的兴趣
 - 喜欢深入Java源码学习Java知识。
