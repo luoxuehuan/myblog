@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "About"
+title: "Aboutme"
 description: "Life is short，you need Spark"
 header-img: "img/11.jpg"
 ---
