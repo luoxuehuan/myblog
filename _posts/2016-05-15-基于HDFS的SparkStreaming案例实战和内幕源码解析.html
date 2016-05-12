@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基于HDFS的SparkStreaming案例实战和内幕源码解析</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h2 id="概要">概要</h2>
+
+<pre><code>本节主要讲解在开发环境中编写SparkStreaming代码监控hdfs目录，实现实时wordCount计算。
+先通过Java方式演示过程，并在文末提供Scala版本代码。
+</code></pre>
+
+
+
+<h2 id="一环境准备">一、环境准备</h2>
+
+<pre><code>1.启动Hadoop集群
+</code></pre>
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso">cd /usr/<span class="hljs-built_in">local</span>/hadoop/hadoop<span class="hljs-subst">-</span><span class="hljs-number">2.6</span><span class="hljs-number">.0</span>/sbin<span class="hljs-subst">/</span>
+<span class="hljs-built_in">.</span>/start<span class="hljs-attribute">-dfs</span><span class="hljs-built_in">.</span>sh  <span class="hljs-comment">//通过http://master:50070（50070为默认端口）查看datanode 的信息</span>
+<span class="hljs-built_in">.</span>/start<span class="hljs-attribute">-yarn</span><span class="hljs-built_in">.</span>sh <span class="hljs-comment">//启动Hadoop的资源管理框架Yarn</span></code></pre>
+
+<pre><code>2.启动Spark集群
+</code></pre>
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso">cd /usr/<span class="hljs-built_in">local</span>/spark/spark<span class="hljs-subst">-</span><span class="hljs-number">1.6</span><span class="hljs-number">.0</span><span class="hljs-attribute">-bin</span><span class="hljs-attribute">-hadoop2</span><span class="hljs-number">.6</span>/sbin<span class="hljs-subst">/</span>
+<span class="hljs-built_in">.</span>/start<span class="hljs-attribute">-all</span><span class="hljs-built_in">.</span>sh              <span class="hljs-comment">//打开浏览器访问http://master:8080查看spark控制台</span>
+<span class="hljs-built_in">.</span>/start<span class="hljs-attribute">-history</span><span class="hljs-attribute">-server</span><span class="hljs-built_in">.</span>sh   <span class="hljs-comment">//运维,启动日志来记录spark集群运行的每一步信息</span></code></pre>
+
+
+
+<h2 id="二代码实战">二、代码实战</h2>
+
+
+
+<h3 id="1定义成员变量">1.定义成员变量</h3>
+
+
+
+<pre class="prettyprint"><code class=" hljs javascript">final <span class="hljs-built_in">String</span> checkpointDirectory = <span class="hljs-string">"hdfs://Master:9000/library/SparkStreaming/CheckPoint_Data"</span>;<span class="hljs-comment">//checkpoint存放数据的文件夹</span>
+final <span class="hljs-built_in">String</span> dataDirectory = <span class="hljs-string">"hdfs://Master:9000/library/SparkStreaming/Data"</span>;<span class="hljs-comment">//SparkStreaming监控的文件夹</span></code></pre>
+
+
+
+<h3 id="2配置sparkconf">2.配置SparkConf</h3>
+
+
+
+<pre class="prettyprint"><code class=" hljs java"><span class="hljs-keyword">final</span> SparkConf conf = <span class="hljs-keyword">new</span> SparkConf().setMaster(<span class="hljs-string">"spark://Master:7077"</span>).
+                setAppName(<span class="hljs-string">"SparkStreamingOnHDFS"</span>);<span class="hljs-comment">//设置Master端口和App名称。</span></code></pre>
+
+
+
+<h3 id="3创建sparkstreamingcontext">3、创建SparkStreamingContext</h3>
+
+
+
+<h4 id="31-定义一个创建streamingcontext的方法">3.1 定义一个创建StreamingContext的方法</h4>
+
+
+
+<pre class="prettyprint"><code class=" hljs cs"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> JavaStreamingContext <span class="hljs-title">createContext</span>(
+            String checkpointDirectory,SparkConf conf) {
+        System.<span class="hljs-keyword">out</span>.println(<span class="hljs-string">"Creating new context"</span>);
+        SparkConf sparkConf = conf;
+        <span class="hljs-comment">// Create the context with a 15 second batch size</span>
+        JavaStreamingContext ssc = <span class="hljs-keyword">new</span> JavaStreamingContext(sparkConf, Durations.seconds(<span class="hljs-number">15</span>));
+        ssc.checkpoint(checkpointDirectory);
+        <span class="hljs-keyword">return</span> ssc;
+    }</code></pre>
+
+
+
+<h4 id="32-定义工厂类创建context">3.2 定义工厂类创建Context</h4>
+
+
+
+<pre class="prettyprint"><code class=" hljs java">JavaStreamingContextFactory factory = <span class="hljs-keyword">new</span> JavaStreamingContextFactory() {
+              <span class="hljs-annotation">@Override</span>
+              <span class="hljs-keyword">public</span> JavaStreamingContext <span class="hljs-title">create</span>() {
+                <span class="hljs-keyword">return</span> createContext(checkpointDirectory, conf);
+              }
+         };</code></pre>
+
+
+
+<h4 id="33-使用streamingcontext的getorcreate创建context">3.3 使用StreamingContext的getOrCreate创建Context</h4>
+
+
+
+<pre class="prettyprint"><code class=" hljs fix"><span class="hljs-attribute">//传入参数为checkpoint目录和工厂
+JavaStreamingContext jsc </span>=<span class="hljs-string"> JavaStreamingContext.getOrCreate(checkpointDirectory, factory);</span></code></pre>
+
+
+
+<h3 id="4-编写业务代码">4 编写业务代码</h3>
+
+
+
+<h4 id="41-创建spark-streaming输入数据来源input-stream">4.1 创建Spark Streaming输入数据来源input Stream：</h4>
+
+
+
+<pre class="prettyprint"><code class=" hljs fix"><span class="hljs-attribute">JavaDStream lines </span>=<span class="hljs-string"> jsc.textFileStream(dataDirectory);</span></code></pre>
+
+
+
+<h4 id="42-接下来就像对于rdd编程一样基于dstream进行编程">4.2 接下来就像对于RDD编程一样基于DStream进行编程</h4>
+
+
+
+<pre class="prettyprint"><code class=" hljs lasso"><span class="hljs-comment">//4.2.1 读取数据并对每一行中的数据以空格作为split参数切分成单词以获得DStream&lt;String&gt;</span>
+JavaDStream<span class="hljs-subst">&lt;</span><span class="hljs-built_in">String</span><span class="hljs-subst">&gt;</span> words <span class="hljs-subst">=</span> lines<span class="hljs-built_in">.</span>flatMap(<span class="hljs-literal">new</span> FlatMapFunction<span class="hljs-subst">&lt;</span><span class="hljs-built_in">String</span>, <span class="hljs-built_in">String</span><span class="hljs-subst">&gt;</span>() { 
+            @Override
+            <span class="hljs-keyword">public</span> Iterable<span class="hljs-subst">&lt;</span><span class="hljs-built_in">String</span><span class="hljs-subst">&gt;</span> call(<span class="hljs-built_in">String</span> line) throws Exception {
+                <span class="hljs-keyword">return</span> Arrays<span class="hljs-built_in">.</span>asList(line<span class="hljs-built_in">.</span>split(<span class="hljs-string">" "</span>));
+            }
+        });
+<span class="hljs-comment">//4.2.2 使用mapToPair创建PairDStream</span>
+JavaPairDStream<span class="hljs-subst">&lt;</span><span class="hljs-built_in">String</span>, <span class="hljs-built_in">Integer</span><span class="hljs-subst">&gt;</span> pairs <span class="hljs-subst">=</span> words<span class="hljs-built_in">.</span>mapToPair(<span class="hljs-literal">new</span> PairFunction<span class="hljs-subst">&lt;</span><span class="hljs-built_in">String</span>, <span class="hljs-built_in">String</span>, <span class="hljs-built_in">Integer</span><span class="hljs-subst">&gt;</span>() {
+
+            @Override
+            <span class="hljs-keyword">public</span> Tuple2<span class="hljs-subst">&lt;</span><span class="hljs-built_in">String</span>, <span class="hljs-built_in">Integer</span><span class="hljs-subst">&gt;</span> call(<span class="hljs-built_in">String</span> word) throws Exception {
+                <span class="hljs-keyword">return</span> <span class="hljs-literal">new</span> Tuple2<span class="hljs-subst">&lt;</span><span class="hljs-built_in">String</span>, <span class="hljs-built_in">Integer</span><span class="hljs-subst">&gt;</span>(word, <span class="hljs-number">1</span>);
+            }
+        });
+<span class="hljs-comment">//4.2.3 使用reduceByKey进行累计操作</span>
+JavaPairDStream<span class="hljs-subst">&lt;</span><span class="hljs-built_in">String</span>, <span class="hljs-built_in">Integer</span><span class="hljs-subst">&gt;</span> wordsCount <span class="hljs-subst">=</span> pairs<span class="hljs-built_in">.</span>reduceByKey(<span class="hljs-literal">new</span> Function2<span class="hljs-subst">&lt;</span><span class="hljs-built_in">Integer</span>, <span class="hljs-built_in">Integer</span>, <span class="hljs-built_in">Integer</span><span class="hljs-subst">&gt;</span>() { <span class="hljs-comment">//对相同的Key，进行Value的累计（包括Local和Reducer级别同时Reduce）</span>
+            @Override
+            <span class="hljs-keyword">public</span> <span class="hljs-built_in">Integer</span> call(<span class="hljs-built_in">Integer</span> v1, <span class="hljs-built_in">Integer</span> v2) throws Exception {
+                <span class="hljs-keyword">return</span> v1 <span class="hljs-subst">+</span> v2;
+            }
+        });
+
+wordsCount<span class="hljs-built_in">.</span>print();
+        <span class="hljs-comment">/*
+        * Spark Streaming执行引擎也就是Driver开始运行，Driver启动的时候是位于一条新的线程中的，当然其内部有消息循环体，用于
+         * 接受应用程序本身或者Executor中的消息；
+         */</span>
+        jsc<span class="hljs-built_in">.</span>start();
+        jsc<span class="hljs-built_in">.</span>awaitTermination();
+        jsc<span class="hljs-built_in">.</span>close();
+</code></pre>
+
+
+
+<h2 id="三打包发布">三、打包发布</h2>
+
+<p><img src="http://img.blog.csdn.net/20160419170815986" alt="这里写图片描述" title=""> <br>
+由于项目是maven构建的，右键Spark程序的类，选择Run as选择Run Configurations。Goals设置为clean package。点击Run。构建成功后，可以在target文件夹找到名为SparkApps-0.0.1-SNAPSHOT-jar-with-dependencies.jar的文件。将此jar放置在Master机器的一个文件夹下，例如/root/Documents/SparkApps。 <br>
+可能会出现的两个问题： <br>
+1.maven-compiler-plugin 插件版本信息错误。</p>
+
+<pre><code>解决办法，增加一行版本信息。
+</code></pre>
+
+
+
+<pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">plugins</span>&gt;</span>  
+    <span class="hljs-tag">&lt;<span class="hljs-title">plugin</span>&gt;</span>  
+        <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>maven-compiler-plugin<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span>  
+        <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.3.2<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span>  //增加的版本信息。
+        <span class="hljs-tag">&lt;<span class="hljs-title">configuration</span>&gt;</span>  
+            <span class="hljs-tag">&lt;<span class="hljs-title">source</span>&gt;</span>1.6<span class="hljs-tag">&lt;/<span class="hljs-title">source</span>&gt;</span>  
+            <span class="hljs-tag">&lt;<span class="hljs-title">target</span>&gt;</span>1.6<span class="hljs-tag">&lt;/<span class="hljs-title">target</span>&gt;</span>  
+            <span class="hljs-tag">&lt;<span class="hljs-title">encoding</span>&gt;</span>UTF-8<span class="hljs-tag">&lt;/<span class="hljs-title">encoding</span>&gt;</span>  
+        <span class="hljs-tag">&lt;/<span class="hljs-title">configuration</span>&gt;</span>  
+    <span class="hljs-tag">&lt;/<span class="hljs-title">plugin</span>&gt;</span>  
+<span class="hljs-tag">&lt;/<span class="hljs-title">plugins</span>&gt;</span></code></pre>
+
+<p>2.Maven Unable to locate the Javac Compiler</p>
+
+<pre><code>解决办法：编辑jdk，把jre home的值修改成jdk home。
+</code></pre>
+
+<p><img src="http://img.blog.csdn.net/20160419171528991" alt="这里写图片描述" title=""></p>
+
+
+
+<h2 id="四案例演示">四、案例演示</h2>
+
+
+
+<h3 id="41-在hadoop上建立数据目录">4.1 在Hadoop上建立数据目录</h3>
+
+<p>注：创建多级目录要在-mkdir后加上-p <br>
+        hadoop dfs -mkdir -p /library/SparkStreaming/Data <br>
+        hadoop dfs –mkdir /library/SparkStreaming/CheckPoint_Data</p>
+
+
+
+<h3 id="42-提交程序">4.2 提交程序</h3>
+
+
+
+<pre class="prettyprint"><code class=" hljs avrasm">//<span class="hljs-number">4.2</span><span class="hljs-number">.1</span> 进入spark的bin目录
+cd /usr/local/spark/spark-<span class="hljs-number">1.6</span><span class="hljs-number">.0</span>-bin-hadoop2<span class="hljs-number">.6</span>/bin/
+
+//<span class="hljs-number">4.2</span><span class="hljs-number">.2</span> spark-submit
+spark-submit --class <span class="hljs-keyword">com</span><span class="hljs-preprocessor">.dt</span><span class="hljs-preprocessor">.spark</span><span class="hljs-preprocessor">.MySparkApps</span><span class="hljs-preprocessor">.Streaming</span><span class="hljs-preprocessor">.SparkStreamingOnHDFS</span> --master spark://Master:<span class="hljs-number">7077</span> /root/Documents/SparkApps/SparkApps-<span class="hljs-number">0.0</span><span class="hljs-number">.1</span>-SNAPSHOT-jar-with-dependencies<span class="hljs-preprocessor">.jar</span>
+</code></pre>
+
+
+
+<h3 id="43-往hdfs里传文件">4.3 往HDFS里传文件</h3>
+
+<pre><code>hadoop dfs -put ./14.txt /library/SparkStreaming/Data
+</code></pre>
+
+
+
+<h3 id="44-运行结果">4.4 运行结果：</h3>
+
+<pre><code>上传了第一个文件
+</code></pre>
+
+<p><img src="http://img.blog.csdn.net/20160419165703076" alt="这里写图片描述" title=""></p>
+
+<pre><code>运行结果
+</code></pre>
+
+<p><img src="http://img.blog.csdn.net/20160419165603685" alt="这里写图片描述" title=""></p>
+
+<pre><code>继续上传文件到HDFS
+</code></pre>
+
+<p><img src="http://img.blog.csdn.net/20160419165815099" alt="这里写图片描述" title="">  </p>
+
+<pre><code>运行结果：   
+</code></pre>
+
+<p><img src="http://img.blog.csdn.net/20160419165628971" alt="这里写图片描述" title=""></p>
+
+
+
+<h2 id="五源码解析">五、源码解析</h2>
+
+
+
+<h3 id="51-javastreamingcontextfactory">5.1 JavaStreamingContextFactory</h3>
+
+<p>JavaStreamingContextFactory的create方法可以创建JavaStreamingContext，而我们在具体实现的时候覆写了该方法，内部就是调用createContext方法来具体实现。</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs python">/**
+ * Factory interface <span class="hljs-keyword">for</span> creating a new JavaStreamingContext
+ */
+trait JavaStreamingContextFactory {
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create</span><span class="hljs-params">()</span>:</span> JavaStreamingContext
+}
+</code></pre>
+
+
+
+<h3 id="52-checkpoint方法">5.2 checkpoint方法</h3>
+
+<p>一方面：保持容错 <br>
+一方面保持状态 <br>
+在开始和结束的时候每个batch都会进行checkpoint</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs scala"><span class="hljs-javadoc">/**
+ * Sets the context to periodically checkpoint the DStream operations for master
+ * fault-tolerance. The graph will be checkpointed every batch interval.
+ * <span class="hljs-javadoctag">@param</span> directory HDFS-compatible directory where the checkpoint data will be reliably stored
+ */</span>
+<span class="hljs-keyword">def</span> checkpoint(directory: String) {
+  ssc.checkpoint(directory)
+}
+</code></pre>
+
+
+
+<h3 id="53-remember方法">5.3 remember方法</h3>
+
+<p>流式处理中过一段时间数据就会被清理掉，但是可以通过remember可以延长数据在程序中的生命周期，另外延长RDD更长的时间。</p>
+
+<p>应用场景： <br>
+假设数据流进来，进行ML或者Graphx的时候有时需要很长时间，但是bacth定时定条件的清除RDD，所以就可以通过remember使得数据可以延长更长时间。</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs applescript">/**
+ * Sets each DStreams <span class="hljs-keyword">in</span> this context <span class="hljs-keyword">to</span> remember RDDs <span class="hljs-keyword">it</span> generated <span class="hljs-keyword">in</span> <span class="hljs-keyword">the</span> <span class="hljs-keyword">last</span> <span class="hljs-keyword">given</span> duration.
+ * DStreams remember RDDs only <span class="hljs-keyword">for</span> a limited duration <span class="hljs-keyword">of</span> duration <span class="hljs-keyword">and</span> releases them <span class="hljs-keyword">for</span> garbage
+ * collection. This method allows <span class="hljs-keyword">the</span> developer <span class="hljs-keyword">to</span> specify how long <span class="hljs-keyword">to</span> remember <span class="hljs-keyword">the</span> RDDs (
+ * <span class="hljs-keyword">if</span> <span class="hljs-keyword">the</span> developer wishes <span class="hljs-keyword">to</span> query old data outside <span class="hljs-keyword">the</span> DStream computation).
+ * @param duration Minimum duration <span class="hljs-keyword">that</span> each DStream should remember <span class="hljs-keyword">its</span> RDDs
+ */
+
+def remember(duration: Duration) {
+  ssc.remember(duration)
+}</code></pre>
+
+
+
+<h3 id="54-getorcreate方法">5.4 getOrCreate方法</h3>
+
+<pre><code>如果设置了checkpoint ，重启程序的时候，getOrCreate()会重新从checkpoint目录中初始化出StreamingContext。
+</code></pre>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">/**
+ * Either recreate a StreamingContext from checkpoint data <span class="hljs-keyword">or</span> create a <span class="hljs-keyword">new</span> StreamingContext.
+ * If checkpoint data exists <span class="hljs-keyword">in</span> the provided `<span class="javascript">checkpointPath</span>`, <span class="hljs-keyword">then</span> StreamingContext will be
+ * recreated from the checkpoint data. If the data does <span class="hljs-keyword">not</span> exist, <span class="hljs-keyword">then</span> the provided factory
+ * will be used to create a JavaStreamingContext.
+ *
+ * <span class="hljs-property">@param</span> checkpointPath Checkpoint directory used <span class="hljs-keyword">in</span> an earlier JavaStreamingContext program
+ * <span class="hljs-property">@param</span> factory        JavaStreamingContextFactory object to create a <span class="hljs-keyword">new</span> JavaStreamingContext
+ * <span class="hljs-property">@deprecated</span> As <span class="hljs-keyword">of</span> <span class="hljs-number">1.4</span><span class="hljs-number">.0</span>, replaced <span class="hljs-keyword">by</span> `<span class="javascript">getOrCreate</span>` without JavaStreamingContextFactor.
+ */
+<span class="hljs-property">@deprecated</span>(<span class="hljs-string">"use getOrCreate without JavaStreamingContextFactor"</span>, <span class="hljs-string">"1.4.0"</span>)
+def getOrCreate(
+    <span class="hljs-attribute">checkpointPath</span>: String,
+    <span class="hljs-attribute">factory</span>: JavaStreamingContextFactory
+  ): JavaStreamingContext = {
+  val ssc = StreamingContext.getOrCreate<span class="hljs-function"><span class="hljs-params">(checkpointPath, () =&gt; {
+    factory.create.ssc
+  })</span>
+  <span class="hljs-title">new</span> <span class="hljs-title">JavaStreamingContext</span><span class="hljs-params">(ssc)</span>
+}
+</span></code></pre>
+
+
+
+<h2 id="六问题总结反思">六、问题总结反思</h2>
+
+<p><strong>错误1</strong>： 在checkpoint 过的基础上 启动程序，因为我们没有配置完整，会从checkpoint目录读取应用信息，无法初始化ShuffleDStream导致出错。 <br>
+集群部署的情况下，第一次执行不会出错。</p>
+
+<pre><code>出错原因：
+</code></pre>
+
+<ol>
+<li>Streaming会定期的进行checkpoint。</li>
+<li>重新启动程序的时候，他会从曾经checkpoint的目录中，如果没有做额外配置的时候，所有的信息都会放在checkpoint的目录中(包括曾经应用程序信息)，因此下次再次启动的时候就会报错，无法初始化ShuffleDStream。</li>
+</ol>
+
+<p><img src="http://img.blog.csdn.net/20160419172453010" alt="这里写图片描述" title=""></p>
+
+
+
+<h2 id="附录">附录：</h2>
+
+<p>Scala版本代码：</p></div></body>
+</html>
