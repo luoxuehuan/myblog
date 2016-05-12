@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "milestone"
+title: "read"
 description: "坚持就是坚持最好的回报"
 header-img: "img/13.jpg"
 ---
