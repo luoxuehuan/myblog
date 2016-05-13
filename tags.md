@@ -2,7 +2,7 @@
 layout: page
 title: "Tags"
 description: "哈哈，你找到了我的博客标签库"  
-header-img: "img/15.jpg"  
+header-img: "img/black.jpg"  
 ---
 
 ## 本页使用方法
