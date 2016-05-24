@@ -48,20 +48,20 @@ teaM是一个面向互联网团队管理的软件产品，旨在为项目管理�
 ### 数据工厂项目（ 2015年5月 ~ 2016年5月 ）
 
 数据工厂项目是一款面向发电集团的互联网产品，依托于国电南自10年来在发电企业的数据积累，针对日常生产经营数据信息需求，通过大数据分析技术，服务于各级管理者，发掘隐藏在数据深层的价值。
-我在此项目中参与了后台接口开发，编写Restful服务，利用Hbase作为nosql数据库，将数据存取在Hbase中，从华电集团各个电厂中抽取数据出来进行分析展示。
+我在此项目中参与了后台接口开发，编写Restful Service服务，利用Hbase作为nosql数据库，将数据存在Hbase中，从华电集团各个电厂中抽取数据出来进行分析展示。
 
 ---
 
 # 技能清单
 
-以下均为我熟练使用的技能
+以下为我熟悉的技能：
 
-- 基础：Java/集合/网络编程/多线程/Scala
+- 基础：Java/集合/网络编程/多线程/了解JVM/Scala编程语言
 - 大数据技术：Spark SQL/Spark Streaming/Hadoop HDFS/Kafka/Flume/Zookeeper/Linux
-- Web开发：jsp/Html/Css/JavaScript/Ajax
-- Web框架：Spring MVC/Spring/Hibernate/Mybatis/Shiro
-- 前端框架：Bootstrap/HTML5/Jquery/extjs
-- 数据库相关：MySQL/Oracle/MongoDB/Hbase/Redis/Memcache
+- J2EE开发框架：Spring MVC/Spring/Hibernate/Mybatis/Shiro
+- 前端开发：jsp/Html/Css/JavaScript/Ajax/JQuery/Bootstrap
+- 数据库相关：MySQL/Oracle、MongoDB/Hbase/
+- 缓存相关:Redis/Memcache
 - 开发、管理、部署工具：Eclipse/IDEA/tomcat/jetty/Svn/Git/Maven
 - 测试工具：Junit
 
@@ -70,7 +70,8 @@ teaM是一个面向互联网团队管理的软件产品，旨在为项目管理�
 # 自我描述
 
 热爱专研，对技术具有强烈的兴趣。
-经常深入Java源码或者Spark源码进行学习。
+会尝试剖析Java源码或者Spark源码进行学习。
+乐于分享与交流，虽是菜鸟但会慢慢写自己的博客对知识进行记录与总结，相信坚持的力量。
 
 # 致谢
 

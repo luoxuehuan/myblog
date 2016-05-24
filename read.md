@@ -24,6 +24,7 @@ header-img: "img/semantic.jpg"
 
 - [《Java 编程思想》](http://luoxuehuan.com)
 - [《算法》](http://luoxuehuan.com)
+- [《Effective Java》](http://luoxuehuan.com)
 
 
 ### 坚信
