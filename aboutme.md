@@ -62,11 +62,12 @@ teaM是一个面向互联网团队管理的软件产品，旨在为项目管理�
 - 前端开发：jsp/Html/Css/JavaScript/Ajax/JQuery/Bootstrap
 - 数据库相关：MySQL/Oracle、MongoDB/Hbase/
 - 缓存相关:Redis/Memcache
-- 开发、管理、部署工具：Eclipse/IDEA/tomcat/jetty/Svn/Git/Maven
+- 开发、管理、部署工具：Eclipse/IDEA/tomcat/Svn/Git/Maven
 - 测试工具：Junit
 
 
 ---
+
 # 自我描述
 
 热爱专研，对技术具有强烈的兴趣。
