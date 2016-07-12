@@ -59,9 +59,9 @@ teaM是一个面向互联网团队管理的软件产品，旨在为项目管理�
 - 基础：Java/集合/网络编程/多线程/了解JVM/Scala编程语言
 - 大数据技术：Spark SQL/Spark Streaming/Hadoop HDFS/Kafka/Flume/Zookeeper/Linux
 - J2EE开发框架：Spring MVC/Spring/Hibernate/Mybatis/Shiro
-- 前端开发：jsp/Html/Css/JavaScript/Ajax/JQuery/Bootstrap
-- 数据库相关：MySQL/Oracle、MongoDB/Hbase/
-- 缓存相关:Redis/Memcache
+- 前端开发：JavaScript/Ajax/JQuery/Bootstrap
+- 数据库相关：MySQL/Oracle、MongoDB/Hbase
+- 缓存相关:Redis/Memcached
 - 开发、管理、部署工具：Eclipse/IDEA/tomcat/Svn/Git/Maven
 - 测试工具：Junit
 
@@ -76,7 +76,7 @@ teaM是一个面向互联网团队管理的软件产品，旨在为项目管理�
 
 # 致谢
 
-感谢您花时间阅读我的简历，期待能有机会和您共事。
+感谢您花时间阅读我的简历，期待能有机会与您共事。
 
 
 
