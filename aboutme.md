@@ -24,7 +24,7 @@ header-img: "img/twitter.jpg"
  - 技术博客：http://www.luoxuehuan.com 
  - Github：http://github.com/luoxuehuan
  - 期望职位：Spark大数据开发工程师
- - 期望薪资：12k~15k
+ - 期望薪资：10k
  - 期望城市：杭州
 
 ---
@@ -59,11 +59,11 @@ teaM是一个面向互联网团队管理的软件产品，旨在为项目管理�
 以下为我熟悉的技能：
 
 - 基础：Java/集合/网络编程/多线程/了解JVM/Scala编程语言
-- 大数据技术：Spark SQL/Spark Streaming/Hadoop HDFS/Kafka/Flume/Zookeeper/Linux
+- 大数据技术：Spark SQL/Spark Streaming/Hadoop HDFS/Kafka/Flume/Zookeeper
 - J2EE开发框架：Spring MVC/Spring/Hibernate/Mybatis/Shiro
-- 前端开发：JavaScript/Ajax/JQuery/Bootstrap
+- 前端开发（了解）：JavaScript/Ajax/JQuery/Bootstrap
 - 数据库相关：MySQL/Oracle、MongoDB/Hbase
-- 缓存相关:Redis/Memcached
+- 缓存相关（熟悉）:Redis/Memcached
 - 开发、管理、部署工具：Eclipse/IDEA/tomcat/Svn/Git/Maven
 - 测试工具：Junit
 
@@ -72,9 +72,9 @@ teaM是一个面向互联网团队管理的软件产品，旨在为项目管理�
 
 # 自我描述
 
-热爱专研，对技术具有强烈的兴趣。
-会尝试剖析Java源码或者Spark源码进行学习。
-乐于分享与交流，虽是菜鸟但会慢慢写自己的博客对知识进行记录总结，相信坚持的力量。
+热爱钻研，能自驱学习，寻求挑战，对技术具有强烈的兴趣。
+会尝试阅读剖析Java源码或者Spark源码进行技术学习。
+乐于分享并参与交流，会写自己的博客对知识进行记录总结。
 
 # 致谢
 
