@@ -63,7 +63,7 @@ teaM是一个面向互联网团队管理的软件产品，旨在为项目管理�
 - 大数据技术：Spark SQL/Spark Streaming/Hadoop HDFS/Kafka/Flume/Zookeeper
 - J2EE开发框架：Spring MVC/Spring/Hibernate/Mybatis/Shiro
 - 前端开发（了解）：JavaScript/Ajax/JQuery/Bootstrap
-- 数据库相关：MySQL/Oracle、MongoDB/Hbase
+- 数据库相关：MySQL/Oracle、Hbase
 - 缓存相关（熟悉）:Redis/Memcached
 - 开发、管理、部署工具：Eclipse/IDEA/tomcat/Svn/Git/Maven
 - 测试工具：Junit
