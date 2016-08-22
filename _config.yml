@@ -1,6 +1,6 @@
 # Site settings
 title: 行而学之
-header-img: "img/16.jpg"
+header-img: "img/green.jpg"
 tagline: "cn"  
 description: "罗学焕|生而行·行而学"  
 baseurl: ""
@@ -44,7 +44,7 @@ defaults:
     values:
       layout: "post"
       author: "luoxuehuan"
-      header-img: "img/16.jpg" # We don't want posts without a header image, that whould mean white on white
+      header-img: "img/green.jpg" # We don't want posts without a header image, that whould mean white on white
 
 # Comments 
 comments :
