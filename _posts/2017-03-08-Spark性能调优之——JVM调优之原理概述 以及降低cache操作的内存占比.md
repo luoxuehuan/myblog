@@ -1,4 +1,11 @@
-
+---
+layout: post
+title: spark调优-jvm调优原理以及降低cache操作的内存占比
+date: 2015-04-02
+categories: blog
+tags: [spark调优]
+description: spark调优
+---
 
 ###  一、性能调优分类：
 
