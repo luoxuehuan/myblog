@@ -1,5 +1,5 @@
 
-
+{:toc}
 
 ## 集群配置：
 
@@ -65,6 +65,8 @@ num.partitions=3
 ### 1.启动：
 
 `bin/zkServer.sh start`
+
+> 启动后，jps查看，会多一个进程：5901 ZooKeeperMain
 
 ### 2.进入客户端：
 `$ bin/zkCli.sh -server 127.0.0.1:2181`
