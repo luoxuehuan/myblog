@@ -40,6 +40,40 @@ header-img: "img/twitter.jpg"
 2015.11.24 | 开始接触Hadoop Spark 。
 2014.03.08 | 电子专业,加入无线电协会软件部，自学了C语言,C++  
 
+
+<table>
+<tr>
+	<td></td>
+	<td>图示</td>
+	<td>优点</td>
+	<td>缺点</td>
+</tr>
+<tr>
+	<td>(1) 热备</td>
+	<td><img src="0.imgs/075a.png"></img></td>
+	<td>无 recover time</td>
+	<td>需要占用双倍资源</td>
+</tr>
+<tr>
+	<td>(2) 冷备</td>
+	<td><img src="0.imgs/075b.png"></img></td>
+	<td>十分可靠</td>
+	<td>存在 recover time</td>
+</tr>
+<tr>
+	<td>(3) 重放</td>
+	<td><img src="0.imgs/075c.png"></img></td>
+	<td>不占用额外资源</td>
+	<td>存在 recover time</td>
+</tr>
+<tr>
+	<td>(4) 忽略</td>
+	<td><img src="0.imgs/075d.png"></img></td>
+	<td>无 recover time</td>
+	<td>准确性有损失</td>
+</tr>
+</table>
+
 ## 欢迎交流
 
 
