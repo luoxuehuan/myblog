@@ -15,9 +15,7 @@ header-img: "img/semantic.jpg"
 
 
 - [《解忧杂货铺》](https://www.baidu.com)
-
 - [《岛上书店》](https://www.baidu.com)
-
 - [《C专家编程》](https://www.baidu.com)
 
 ### 最爱的书籍：
@@ -25,6 +23,7 @@ header-img: "img/semantic.jpg"
 - [《Java 编程思想》](http://luoxuehuan.com)
 - [《算法》](http://luoxuehuan.com)
 - [《Effective Java》](http://luoxuehuan.com)
+- [《深入理解Java虚拟机》](http://luoxuehuan.com)
 
 
 ### 坚信
